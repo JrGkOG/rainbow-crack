@@ -116,6 +116,8 @@ class RainbowTable:
             self.algorithm = Algorithm.SHA1
         elif algorithm == "md5":
             self.algorithm = Algorithm.MD5
+        elif algorithm == "sha256":
+            self.algorithm = Algorithm.SHA256
         else:
             raise ValueError("Algorithm not supported")
 
@@ -148,6 +150,8 @@ class RainbowTable:
             return hashlib.sha1(plaintext.encode('utf-8')).digest()
         elif self.algorithm == Algorithm.MD5:
             return hashlib.md5(plaintext.encode('utf-8')).digest()
+        elif self.algorithm == Algorithm.SHA256:
+            return hashlib.sha256(plaintext.encode('utf-8')).digest()
     def reduce_function(self, hashstring, index):
         """Returns a string that contains the reduced value of the 
         given hash string
@@ -250,6 +254,18 @@ class RainbowTable:
         if not isinstance(objectLoaded, RainbowTable):
             raise ValueError("The file " + filename +
                              " does not contain a valid table")
+        # Ensure compatibility with older serialized tables that may not
+        # have the GomuhryTree `tree` attribute. Rebuild it from `table`
+        # if missing so lookup/crack operations work as expected.
+        if not hasattr(objectLoaded, 'tree') or objectLoaded.tree is None:
+            objectLoaded.tree = GomuhryTree(t=5)
+            try:
+                for k, v in getattr(objectLoaded, 'table', {}).items():
+                    objectLoaded.tree.insert(k, v)
+            except Exception:
+                # If rebuilding the tree fails, leave it absent and
+                # let callers handle lookup failures.
+                objectLoaded.tree = None
         return objectLoaded
 
     def lookup(self, hash_to_crack):

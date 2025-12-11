@@ -24,6 +24,9 @@ def test_hash_function():
     test_table = RainbowTable("md5", "alphanumeric", 1, 1, 1, 1)
     assert test_table.hash_function(
         "rainbowtable").hex() == "c055588e18df56f877f3c3ca73790ecd"
+    test_table = RainbowTable("sha256", "alphanumeric", 1, 1, 1, 1)
+    expected_sha256 = hashlib.sha256("rainbowtable".encode('utf-8')).hexdigest()
+    assert test_table.hash_function("rainbowtable").hex() == expected_sha256
 
 
 def test_reduce_function():
