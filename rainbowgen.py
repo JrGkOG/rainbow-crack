@@ -42,8 +42,8 @@ def validate_arguments(args):
     if args.number_of_chains < 1:
         raise ValueError("Number of chains must be at least 1")
     
-    if args.algorithm.lower() not in ['sha1', 'md5']:
-        raise ValueError("Algorithm must be either 'sha1' or 'md5'")
+    if args.algorithm.lower() not in ['sha1', 'md5', 'sha256']:
+        raise ValueError("Algorithm must be either 'sha1', 'sha256' or 'md5'")
 #jeevan
 def estimate_memory_usage(args):
     """Estimate memory usage based on input parameters"""
@@ -80,7 +80,7 @@ def main():
         )
         parser.add_argument(
             "algorithm",
-            help="Hash algorithm to use (sha1 or md5)",
+            help="Hash algorithm to use (sha1, sha256 or md5)",
             type=str
         )
         parser.add_argument(
